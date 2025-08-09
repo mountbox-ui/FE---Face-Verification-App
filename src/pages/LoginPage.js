@@ -1,5 +1,6 @@
 import { useState } from "react";
 import API from "../api/api";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
@@ -13,8 +14,9 @@ export default function LoginPage() {
     setError("");
     try {
       const res = await API.post("/auth/login", { username, password });
-      localStorage.setItem("token", res.data.token);
-      navigate("/");
+      // const res = await axios.post('http://localhost:5000/api/auth/login', { username, password });
+      // localStorage.setItem("token", res.data.token);
+      navigate("/dashboard");
     } catch (err) {
       setError("Invalid credentials");
     }
