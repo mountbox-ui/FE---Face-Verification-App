@@ -1,24 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { useState } from 'react';
 
 function App() {
+  const [capturedImage, setCapturedImage] = useState('');
+  
+  // Replace this with a stored image URL from your DB or server
+  const storedImageUrl = 'http://localhost:5000/uploads/user1.jpg';
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+    <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/"
+            element={<ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>} />
+        </Routes>
+      </Router></>
   );
 }
 
