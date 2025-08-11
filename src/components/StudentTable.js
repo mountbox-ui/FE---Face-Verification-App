@@ -17,6 +17,13 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
 
+  // Derive backend origin for loading static uploads
+  const apiBase = (process.env.REACT_APP_API_URL ||
+    (process.env.NODE_ENV === 'production'
+      ? 'https://be-face-verification-app.onrender.com/api'
+      : 'http://localhost:5000/api'));
+  const backendOrigin = apiBase.replace(/\/?api\/?$/, '');
+
   // Load face-api models on component mount
   useEffect(() => {
     loadFaceApiModels();
@@ -377,7 +384,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
           <div>
             <div className="flex justify-center mb-3">
               <img
-                src={`http://localhost:5000/${groupPhoto}`}
+                src={`${backendOrigin}/${groupPhoto}`}
                 alt="Group Photo"
                 className="max-w-full h-auto max-h-64 sm:max-h-96 rounded shadow-lg"
                 onError={(e) => {
