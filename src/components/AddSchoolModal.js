@@ -20,9 +20,10 @@ export default function AddSchoolModal({ onClose, onSuccess }) {
       });
       setLoading(false);
       onSuccess();
-    } catch {
+    } catch (err) {
       setLoading(false);
-      alert("Failed to add school");
+      const msg = err?.response?.data?.message || err.message || 'Failed to add school';
+      alert(`Failed to add school: ${msg}`);
     }
   };
 
