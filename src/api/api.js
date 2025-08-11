@@ -2,9 +2,10 @@ import axios from "axios";
 
 const API = axios.create({
   baseURL:
-    process.env.NODE_ENV === "production"
+    process.env.REACT_APP_API_URL ||
+    (process.env.NODE_ENV === "production"
       ? "https://be-face-verification-app.onrender.com/api"
-      : "http://localhost:5000/api",
+      : "http://localhost:5000/api"),
 });
 
 API.interceptors.request.use((config) => {
