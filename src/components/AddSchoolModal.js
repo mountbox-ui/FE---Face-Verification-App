@@ -22,8 +22,9 @@ export default function AddSchoolModal({ onClose, onSuccess }) {
       onSuccess(res.data?.school);
     } catch (err) {
       setLoading(false);
+      const status = err?.response?.status;
       const msg = err?.response?.data?.message || err.message || 'Failed to add school';
-      alert(`Failed to add school: ${msg}`);
+      alert(`Failed to add school (${status || 'network'}): ${msg}`);
     }
   };
 
