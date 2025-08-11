@@ -13,8 +13,8 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
-      const res = await API.post("/auth/login", { username, password });
-      localStorage.setItem("token", res.data.token);
+      await API.post("/auth/login", { username, password });
+      localStorage.setItem("token", "demo");
       navigate("/dashboard");
     } catch (err) {
       setError("Invalid credentials");
