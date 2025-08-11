@@ -8,7 +8,7 @@ function App() {
   const [capturedImage, setCapturedImage] = useState('');
   
   // Replace this with a stored image URL from your DB or server
-  const storedImageUrl = 'http://localhost:5000/uploads/user1.jpg';
+  const storedImageUrl = `${process.env.REACT_APP_API_BASE_URL}/uploads/user1.jpg`;
   return (
     <>
     <Router>
