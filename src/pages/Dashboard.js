@@ -34,10 +34,17 @@ export default function Dashboard() {
 
   const handleAddSchool = () => setShowModal(true);
 
-  const handleSchoolAdded = () => {
+  const handleSchoolAdded = (newSchool) => {
     setShowModal(false);
-    fetchSchools();
     setPopup({ show: true, message: "School added successfully!", type: "success" });
+    if (newSchool?._id) {
+      // Optimistically add and select the new school
+      setSchools(prev => [newSchool, ...prev]);
+      setSelectedSchool(newSchool._id);
+      fetchStudents(newSchool._id);
+    } else {
+      fetchSchools();
+    }
   };
 
   const handleSchoolDeleted = (deletedSchoolId) => {

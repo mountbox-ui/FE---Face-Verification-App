@@ -15,11 +15,11 @@ export default function AddSchoolModal({ onClose, onSuccess }) {
     if (groupPhoto) formData.append("groupPhoto", groupPhoto);
 
     try {
-      await API.post("/school/add", formData, {
+      const res = await API.post("/school/add", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setLoading(false);
-      onSuccess();
+      onSuccess(res.data?.school);
     } catch (err) {
       setLoading(false);
       const msg = err?.response?.data?.message || err.message || 'Failed to add school';
