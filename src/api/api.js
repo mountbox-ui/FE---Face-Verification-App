@@ -3,8 +3,8 @@ import axios from "axios";
 const API = axios.create({
   baseURL:
     process.env.NODE_ENV === "production"
-      ? "https://be-face-verification-app.onrender.com/api" // Production backend
-      : "http://localhost:5000/api", // Local backend for development
+      ? "https://be-face-verification-app.onrender.com/api"
+      : "http://localhost:5000/api",
 });
 
 API.interceptors.request.use((config) => {
