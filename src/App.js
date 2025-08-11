@@ -8,7 +8,8 @@ function App() {
   const [capturedImage, setCapturedImage] = useState('');
   
   // Replace this with a stored image URL from your DB or server
-  const storedImageUrl = 'http://localhost:5000/uploads/user1.jpg';
+  const storedImageUrl = 'https://res.cloudinary.com/dpwdruptp/image/upload/v123456789/group_photos/filename.jpg
+';
   return (
     <>
     <Router>
