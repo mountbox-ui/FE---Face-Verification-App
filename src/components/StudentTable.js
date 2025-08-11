@@ -155,57 +155,49 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
     }
   };
 
-  const uploadToCloudinary = async (base64Image) => {
-    try {
-      // Convert base64 to blob
-      const response = await fetch(base64Image);
-      const blob = await response.blob();
-      
-      // Create form data
-      const formData = new FormData();
-      formData.append('file', blob);
-      formData.append('upload_preset', 'football'); // Replace with your Cloudinary upload preset
-
-      // Upload to Cloudinary
-      const cloudinaryResponse = await fetch(
-        'https://api.cloudinary.com/v1_1/dhzemtr5w/image/upload', // Replace YOUR_CLOUD_NAME
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
-
-      const data = await cloudinaryResponse.json();
-      return data.secure_url;
-    } catch (error) {
-      console.error('Error uploading to Cloudinary:', error);
-      throw error;
-    }
-  };
-
-  // Modify your existing submitVerification function
   const submitVerification = async () => {
+    if (!capturedImage || !currentStudent) return;
+    
+    setVerifyingId(currentStudent._id);
+    
     try {
-      if (!capturedImage || !currentStudent) return;
-
-      // Upload captured image to Cloudinary
-      const imageUrl = await uploadToCloudinary(capturedImage);
-
-      // Update your verification API call to include the Cloudinary URL
-      const response = await API.post("/verify/manual", {
+      const img = await faceapi.fetchImage(capturedImage);
+      const detections = await faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions());
+      
+      if (detections.length === 0) {
+        onVerifyResult("failed", "No face detected in the photo. Please retake the photo.");
+        closeCamera();
+        setVerifyingId(null);
+        return;
+      }
+      
+      if (detections.length > 1) {
+        onVerifyResult("failed", "Multiple faces detected. Please ensure only one face is in the photo.");
+        closeCamera();
+        setVerifyingId(null);
+        return;
+      }
+      
+      const response = await API.post(`/verification/${currentStudent._id}`, {
+        capturedImage: capturedImage,
         studentId: currentStudent._id,
-        imageUrl: imageUrl,
-        schoolId
+        schoolId: schoolId,
+        faceDetected: true,
+        faceCount: detections.length
       });
-
-      onVerifyResult(response.data);
-      setShowCamera(false);
-      closeCamera();
-      setManualVerifyingId(null);
-      setCapturedImage(null);
-    } catch (error) {
-      console.error("Error during verification:", error);
+      
+      const result = response.data.result;
+      const message = response.data.message;
+      
+      onVerifyResult(result, message);
+      
+    } catch (err) {
+      console.error('Verification error:', err);
+      onVerifyResult("failed", `Verification failed: ${err.message}`);
     }
+    
+    closeCamera();
+    setVerifyingId(null);
   };
 
   const closeCamera = () => {
@@ -310,7 +302,6 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
           <thead>
             <tr>
               <th className="p-2 border text-xs sm:text-sm">Register No</th>
-              <th className="p-2 border text-xs sm:text-sm">profile picture</th>
               <th className="p-2 border text-xs sm:text-sm">Name</th>
               <th className="p-2 border text-xs sm:text-sm">Class</th>
               <th className="p-2 border text-xs sm:text-sm">D.O.B</th>
