@@ -6,7 +6,8 @@ const API = axios.create({
     (process.env.NODE_ENV === "production"
       ? "https://be-face-verification-app.onrender.com/api"
       : "http://localhost:5000/api"),
-  withCredentials: false
+  withCredentials: false,
+  timeout: 30000
 });
 
 API.interceptors.request.use((config) => {
