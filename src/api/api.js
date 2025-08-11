@@ -6,11 +6,11 @@ const API = axios.create({
     (process.env.NODE_ENV === "production"
       ? "https://be-face-verification-app.onrender.com/api"
       : "http://localhost:5000/api"),
+  withCredentials: false
 });
 
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  // Auth disabled; no Authorization header needed
   return config;
 });
 
