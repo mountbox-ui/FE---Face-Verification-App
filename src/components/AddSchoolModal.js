@@ -15,7 +15,7 @@ export default function AddSchoolModal({ onClose, onSuccess }) {
     if (groupPhoto) formData.append("groupPhoto", groupPhoto);
 
     try {
-      await API.post("/school/add", formData, {
+      await API.post("https://be-face-verification-app.onrender.com/api/school/add", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setLoading(false);
