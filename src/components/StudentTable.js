@@ -86,8 +86,8 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
-          width: 640, 
-          height: 480,
+          inlineSize: 640, 
+          blockSize: 480,
           facingMode: 'user'
         },
         audio: false 
@@ -377,7 +377,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
           <div>
             <div className="flex justify-center mb-3">
               <img
-                src={`${process.env.REACT_APP_API_BASE_URL}/${groupPhoto}`}
+                src={groupPhoto}
                 alt="Group Photo"
                 className="max-w-full h-auto max-h-64 sm:max-h-96 rounded shadow-lg"
                 onError={(e) => {
