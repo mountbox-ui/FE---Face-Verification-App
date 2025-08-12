@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import API from "../api/api";
 import * as faceapi from 'face-api.js';
-import '@tensorflow/tfjs-backend-webgl';
-import '@tensorflow/tfjs-backend-cpu';
+import '@tensorflow/tfjs';
 
 export default function StudentTable({ students, schoolId, onVerifyResult, selectedDay = 'day1', refreshKey }) {
   const [verifyingId, setVerifyingId] = useState(null);
