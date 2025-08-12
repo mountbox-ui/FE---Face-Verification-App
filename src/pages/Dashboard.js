@@ -164,7 +164,7 @@ export default function Dashboard() {
       const img = await faceapi.fetchImage(groupPhoto);
       const detections = await faceapi
         .detectAllFaces(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.3 }))
-        .withFaceLandmarks()
+        .withFaceLandmarks(true)
         .withFaceDescriptors();
 
       if (!detections.length) throw new Error('No faces detected in group photo');
