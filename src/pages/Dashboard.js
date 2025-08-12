@@ -4,6 +4,7 @@ import AddSchoolModal from "../components/AddSchoolModal";
 import SchoolDropdown from "../components/SchoolDropdown";
 import StudentTable from "../components/StudentTable";
 import Popup from "../components/Popup";
+import * as faceapi from 'face-api.js';
 
 export default function Dashboard() {
   // State variables
@@ -148,6 +149,35 @@ export default function Dashboard() {
     return { status: 'timeout' };
   };
 
+  const clientSideRegenerate = async () => {
+    try {
+      // Fetch school to get group photo
+      const r = await API.get(`/school/${selectedSchool}`);
+      const groupPhoto = r.data.groupPhoto;
+      if (!groupPhoto) throw new Error('No group photo available');
+
+      // Load required models on the client
+      await faceapi.loadTinyFaceDetectorModel('/models');
+      await faceapi.loadFaceLandmarkTinyModel('/models');
+      await faceapi.loadFaceRecognitionModel('/models');
+
+      const img = await faceapi.fetchImage(groupPhoto);
+      const detections = await faceapi
+        .detectAllFaces(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.3 }))
+        .withFaceLandmarks()
+        .withFaceDescriptors();
+
+      if (!detections.length) throw new Error('No faces detected in group photo');
+
+      const descriptors = detections.map(d => Array.from(d.descriptor));
+      await API.post(`/school/${selectedSchool}/group-descriptors`, { descriptors });
+      setRefreshKey(k => k + 1);
+      setPopup({ show: true, message: `Face descriptors ready: ${descriptors.length}`, type: 'success' });
+    } catch (e) {
+      setPopup({ show: true, message: e.message || 'Client-side regeneration failed', type: 'error' });
+    }
+  };
+
   const handleRegenerateDescriptors = async () => {
     if (!selectedSchool) {
       setPopup({ show: true, message: "Please select a school first", type: "error" });
@@ -162,9 +192,11 @@ export default function Dashboard() {
         setPopup({ show: true, message: `Face descriptors ready: ${result.count}`, type: 'success' });
         setRefreshKey(k => k + 1);
       } else if (result.status === 'error') {
-        setPopup({ show: true, message: `Descriptor regeneration failed`, type: 'error' });
+        setPopup({ show: true, message: `Descriptor regeneration failed on server. Trying locally...`, type: 'error' });
+        await clientSideRegenerate();
       } else {
-        setPopup({ show: true, message: 'Descriptor regeneration timed out', type: 'error' });
+        setPopup({ show: true, message: 'Descriptor regeneration timed out on server. Trying locally...', type: 'error' });
+        await clientSideRegenerate();
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || "Failed to regenerate descriptors";
