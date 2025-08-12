@@ -47,6 +47,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
       await faceapi.tf.ready();
       await faceapi.loadTinyFaceDetectorModel('/models');
       await faceapi.loadFaceLandmarkTinyModel('/models');
+      await faceapi.loadFaceRecognitionModel('/models');
       setModelsLoaded(true);
       console.log('Face-api models loaded successfully');
     } catch (error) {
@@ -174,42 +175,53 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
     
     try {
       const img = await faceapi.fetchImage(capturedImage);
-      const detections = await faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions());
-      
-      if (detections.length === 0) {
+      const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 });
+      const faces = await faceapi.detectAllFaces(img, options);
+      if (faces.length === 0) {
         onVerifyResult("failed", "No face detected in the photo. Please retake the photo.");
         closeCamera();
         setVerifyingId(null);
         return;
       }
-      
-      if (detections.length > 1) {
+      if (faces.length > 1) {
         onVerifyResult("failed", "Multiple faces detected. Please ensure only one face is in the photo.");
         closeCamera();
         setVerifyingId(null);
         return;
       }
-      
+
+      const result = await faceapi
+        .detectSingleFace(img, options)
+        .withFaceLandmarks(true)
+        .withFaceDescriptor();
+
+      if (!result?.descriptor) {
+        onVerifyResult("failed", "No face descriptor extracted. Please retake the photo.");
+        closeCamera();
+        setVerifyingId(null);
+        return;
+      }
+
+      const descriptor = Array.from(result.descriptor);
+
       const response = await API.post(`/verification/${currentStudent._id}`, {
-        capturedImage: capturedImage,
+        descriptor,
         studentId: currentStudent._id,
-        schoolId: schoolId,
-        faceDetected: true,
-        faceCount: detections.length
+        schoolId: schoolId
       });
       
-      const result = response.data.result;
+      const verifyResult = response.data.result;
       const message = response.data.message;
 
-      // Save day result
+      // Save day result (and Day 1 photo) for the 6-day workflow
       const dayNumber = parseInt(selectedDay.replace('day', ''), 10);
       await API.post(`/student/${currentStudent._id}/day/${dayNumber}/result`, {
-        result: result === 'success' ? 'success' : (result === 'failed' ? 'failed' : 'pending'),
+        result: verifyResult === 'success' ? 'success' : (verifyResult === 'failed' ? 'failed' : 'pending'),
         confidence: response?.data?.details?.confidence,
         photo: selectedDay === 'day1' ? capturedImage : undefined
       });
-      
-      onVerifyResult(result, message);
+
+      onVerifyResult(verifyResult, message);
       
     } catch (err) {
       console.error('Verification error:', err);
