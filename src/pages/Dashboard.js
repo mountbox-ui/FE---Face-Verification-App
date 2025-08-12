@@ -156,50 +156,33 @@ export default function Dashboard() {
       const groupPhoto = r.data.groupPhoto;
       if (!groupPhoto) throw new Error('No group photo available');
 
-      // Try to load full 68 landmarks; fall back to tiny if not present
-      try {
-        await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
-      } catch {
-        await faceapi.nets.faceLandmark68TinyNet.loadFromUri('/models');
-      }
+      // Load only tiny models which are present in /models to avoid 404s
+      await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+      await faceapi.nets.faceLandmark68TinyNet.loadFromUri('/models');
       await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
 
       const img = await faceapi.fetchImage(groupPhoto);
 
-      let detections = [];
-      let usedModel = 'ssd';
+      // Upscale image via an offscreen canvas to help with small faces
+      const off = document.createElement('canvas');
+      const scale = 1.5; // upscale 1.5x
+      off.width = Math.round(img.width * scale);
+      off.height = Math.round(img.height * scale);
+      const ctx = off.getContext('2d');
+      ctx.drawImage(img, 0, 0, off.width, off.height);
+      const upscaledImg = await faceapi.fetchImage(off.toDataURL('image/jpeg', 0.92));
 
-      // Prefer SSD MobileNetV1 if available for better accuracy on group photos
-      try {
-        await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
-        detections = await faceapi
-          .detectAllFaces(img, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.3 }))
-          .withFaceLandmarks()
-          .withFaceDescriptors();
-      } catch (e) {
-        // Fallback: use TinyFaceDetector with higher input size and optional upscaling
-        usedModel = 'tiny';
-        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-        // Upscale image via an offscreen canvas to help with small faces
-        const off = document.createElement('canvas');
-        const scale = 1.5; // upscale 1.5x
-        off.width = Math.round(img.width * scale);
-        off.height = Math.round(img.height * scale);
-        const ctx = off.getContext('2d');
-        ctx.drawImage(img, 0, 0, off.width, off.height);
-        const upscaledImg = await faceapi.fetchImage(off.toDataURL('image/jpeg', 0.92));
-        detections = await faceapi
-          .detectAllFaces(upscaledImg, new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.25 }))
-          .withFaceLandmarks(true)
-          .withFaceDescriptors();
-      }
+      const detections = await faceapi
+        .detectAllFaces(upscaledImg, new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.25 }))
+        .withFaceLandmarks(true)
+        .withFaceDescriptors();
 
       if (!detections.length) throw new Error('No faces detected in group photo');
 
       const descriptors = detections.map(d => Array.from(d.descriptor));
       await API.post(`/school/${selectedSchool}/group-descriptors`, { descriptors });
       setRefreshKey(k => k + 1);
-      setPopup({ show: true, message: `Face descriptors ready: ${descriptors.length} (model: ${usedModel})`, type: 'success' });
+      setPopup({ show: true, message: `Face descriptors ready: ${descriptors.length}`, type: 'success' });
     } catch (e) {
       setPopup({ show: true, message: e.message || 'Client-side regeneration failed', type: 'error' });
     }
