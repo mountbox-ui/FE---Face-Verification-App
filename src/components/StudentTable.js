@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import API from "../api/api";
 import * as faceapi from 'face-api.js';
 
-export default function StudentTable({ students, schoolId, onVerifyResult }) {
+export default function StudentTable({ students, schoolId, onVerifyResult, selectedDay = 'day1' }) {
   const [verifyingId, setVerifyingId] = useState(null);
   const [manualVerifyingId, setManualVerifyingId] = useState(null);
   const [reVerifyingId, setReVerifyingId] = useState(null);
@@ -188,6 +188,14 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
       
       const result = response.data.result;
       const message = response.data.message;
+
+      // Save day result
+      const dayNumber = parseInt(selectedDay.replace('day', ''), 10);
+      await API.post(`/student/${currentStudent._id}/day/${dayNumber}/result`, {
+        result: result === 'success' ? 'success' : (result === 'failed' ? 'failed' : 'pending'),
+        confidence: response?.data?.details?.confidence,
+        photo: selectedDay === 'day1' ? capturedImage : undefined
+      });
       
       onVerifyResult(result, message);
       
@@ -208,6 +216,8 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
     setCapturedImage(null);
     setCurrentStudent(null);
   };
+
+  const isLaterDay = selectedDay !== 'day1';
 
   return (
     <div>
@@ -306,6 +316,9 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
               <th className="p-2 border text-xs sm:text-sm">Class</th>
               <th className="p-2 border text-xs sm:text-sm">D.O.B</th>
               <th className="p-2 border text-xs sm:text-sm">Age Group</th>
+              {isLaterDay && (
+                <th className="p-2 border text-xs sm:text-sm">Day 1 Photo</th>
+              )}
               <th className="p-2 border text-xs sm:text-sm">Status</th>
               <th className="p-2 border text-xs sm:text-sm">Action</th>
               <th className="p-2 border text-xs sm:text-sm">Manual Verification</th>
@@ -320,6 +333,15 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
                 <td className="p-2 border text-xs sm:text-sm">{student.class}</td>
                 <td className="p-2 border text-xs sm:text-sm">{student.dob}</td>
                 <td className="p-2 border text-xs sm:text-sm">{student.ageGroup}</td>
+                {isLaterDay && (
+                  <td className="p-2 border text-xs sm:text-sm">
+                    {student.day1Photo ? (
+                      <img src={student.day1Photo} alt="Day 1" className="w-16 h-16 object-cover rounded border" />
+                    ) : (
+                      <span className="text-gray-500">No photo</span>
+                    )}
+                  </td>
+                )}
                 <td className="p-2 border text-xs sm:text-sm">
                   {student.verificationResult === "success"
                     ? <span className="text-green-600">✅ Verified</span>
@@ -452,11 +474,9 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
         <div className="mt-4 p-2 bg-gray-100 rounded text-xs overflow-x-auto">
           <p><strong>Debug Info:</strong></p>
           <p>School ID: {schoolId}</p>
-          <p>Group Photo Path: {groupPhoto}</p>
+          <p>Selected Day: {selectedDay}</p>
           <p>Students Count: {students.length}</p>
           <p>Models Loaded: {modelsLoaded ? 'Yes' : 'No'}</p>
-          <p>Has Group Descriptors: {groupDescriptorsInfo?.hasGroupDescriptors ? 'Yes' : 'No'}</p>
-          <p>Descriptors Count: {groupDescriptorsInfo?.descriptorsCount || 0}</p>
         </div>
       )}
     </div>

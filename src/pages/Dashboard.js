@@ -12,14 +12,15 @@ export default function Dashboard() {
   const [students, setStudents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
+  const [selectedDay, setSelectedDay] = useState("day1"); // day1..day6
 
   useEffect(() => {
     fetchSchools();
   }, []);
 
   useEffect(() => {
-    if (selectedSchool) fetchStudents(selectedSchool);
-  }, [selectedSchool]);
+    if (selectedSchool) fetchStudents(selectedSchool, selectedDay);
+  }, [selectedSchool, selectedDay]);
 
   const fetchSchools = async () => {
     const res = await API.get("/school");
@@ -27,9 +28,10 @@ export default function Dashboard() {
     if (res.data.length > 0) setSelectedSchool(res.data[0]._id);
   };
 
-  const fetchStudents = async (schoolId) => {
-    const res = await API.get(`/school/${schoolId}/students`);
-    setStudents(res.data);
+  const fetchStudents = async (schoolId, day) => {
+    // Use student list endpoint with day projection
+    const res = await API.get(`/student`, { params: { schoolId, day } });
+    setStudents(res.data.students || res.data);
   };
 
   const handleAddSchool = () => setShowModal(true);
@@ -58,9 +60,7 @@ export default function Dashboard() {
   const handleVerifyResult = (result, message) => {
     setPopup({ show: true, message, type: result });
     // Refresh the student list to show updated status
-    if (selectedSchool) {
-      fetchStudents(selectedSchool);
-    }
+    if (selectedSchool) fetchStudents(selectedSchool, selectedDay);
   };
 
   const handleDownload = async () => {
@@ -112,6 +112,26 @@ export default function Dashboard() {
     }
   };
 
+  const handleDownloadSelectedDay = async () => {
+    try {
+      const dayNumber = parseInt(selectedDay.replace('day', ''), 10);
+      const res = await API.get(`/student/download/day/${dayNumber}`, {
+        params: { schoolId: selectedSchool },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `day_${dayNumber}_details.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setPopup({ show: true, message: `Day ${dayNumber} details downloaded!`, type: 'success' });
+    } catch (err) {
+      setPopup({ show: true, message: 'Day download failed', type: 'error' });
+    }
+  };
+
   const handleRegenerateDescriptors = async () => {
     if (!selectedSchool) {
       setPopup({ show: true, message: "Please select a school first", type: "error" });
@@ -136,12 +156,14 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="text-xl sm:text-2xl font-bold">Face Verification App</h1>
-        <button
-          className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={handleAddSchool}
-        >
-          Add School
-        </button>
+        {selectedDay === 'day1' && (
+          <button
+            className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={handleAddSchool}
+          >
+            Add School
+          </button>
+        )}
       </div>
       
       <div className="flex flex-col gap-4 mb-4">
@@ -152,6 +174,18 @@ export default function Dashboard() {
             onChange={setSelectedSchool}
             onSchoolDeleted={handleSchoolDeleted}
           />
+          <select
+            className="w-full sm:w-auto border rounded px-3 py-2"
+            value={selectedDay}
+            onChange={(e) => setSelectedDay(e.target.value)}
+          >
+            <option value="day1">Day 1</option>
+            <option value="day2">Day 2</option>
+            <option value="day3">Day 3</option>
+            <option value="day4">Day 4</option>
+            <option value="day5">Day 5</option>
+            <option value="day6">Day 6</option>
+          </select>
           <button
             className="w-full sm:w-auto bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
             onClick={handleRegenerateDescriptors}
@@ -182,6 +216,13 @@ export default function Dashboard() {
           >
             Download All Schools Verified
           </button>
+          <button
+            className="w-full sm:w-auto bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm"
+            onClick={handleDownloadSelectedDay}
+            title="Download details for selected day"
+          >
+            Download Selected Day
+          </button>
         </div>
       </div>
       
@@ -189,6 +230,7 @@ export default function Dashboard() {
         students={students}
         schoolId={selectedSchool}
         onVerifyResult={handleVerifyResult}
+        selectedDay={selectedDay}
       />
       {showModal && (
         <AddSchoolModal
