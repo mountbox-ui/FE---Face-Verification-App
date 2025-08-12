@@ -377,8 +377,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult }) {
           <div>
             <div className="flex justify-center mb-3">
               <img
-                // src={`${process.env.REACT_APP_API_BASE_URL}/uploads/user1.jpg`}
-                src={`https://be-face-verification-app.onrender.com/${groupPhoto}`}
+                src={groupPhoto}
                 alt="Group Photo"
                 className="max-w-full h-auto max-h-64 sm:max-h-96 rounded shadow-lg"
                 onError={(e) => {
