@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import API from "../api/api";
 import * as faceapi from 'face-api.js';
 
-export default function StudentTable({ students, schoolId, onVerifyResult, selectedDay = 'day1' }) {
+export default function StudentTable({ students, schoolId, onVerifyResult, selectedDay = 'day1', refreshKey }) {
   const [verifyingId, setVerifyingId] = useState(null);
   const [manualVerifyingId, setManualVerifyingId] = useState(null);
   const [reVerifyingId, setReVerifyingId] = useState(null);
@@ -30,6 +30,11 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
       setGroupPhoto(null);
     }
   }, [schoolId]);
+
+  // Refresh descriptors info after regeneration
+  useEffect(() => {
+    if (schoolId) fetchGroupPhoto();
+  }, [refreshKey]);
 
   const loadFaceApiModels = async () => {
     try {

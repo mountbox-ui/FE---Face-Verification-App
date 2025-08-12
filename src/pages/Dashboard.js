@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [showModal, setShowModal] = useState(false);
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
   const [selectedDay, setSelectedDay] = useState("day1"); // day1..day6
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     fetchSchools();
@@ -132,6 +133,21 @@ export default function Dashboard() {
     }
   };
 
+  const pollDescriptorsReady = async (schoolId, maxMs = 60000, intervalMs = 2000) => {
+    const start = Date.now();
+    while (Date.now() - start < maxMs) {
+      try {
+        const r = await API.get(`/school/${schoolId}`);
+        const status = r.data.groupDescriptorsStatus;
+        const count = r.data.descriptorsCount || 0;
+        if (status === 'ready' && count > 0) return { status, count };
+        if (status === 'error') return { status: 'error', error: r.data.groupDescriptorsError };
+      } catch {}
+      await new Promise(res => setTimeout(res, intervalMs));
+    }
+    return { status: 'timeout' };
+  };
+
   const handleRegenerateDescriptors = async () => {
     if (!selectedSchool) {
       setPopup({ show: true, message: "Please select a school first", type: "error" });
@@ -140,12 +156,16 @@ export default function Dashboard() {
 
     try {
       setPopup({ show: true, message: "Regenerating face descriptors...", type: "info" });
-      const res = await API.post(`/school/${selectedSchool}/regenerate-descriptors`);
-      setPopup({ 
-        show: true, 
-        message: `Successfully regenerated ${res.data.descriptorsCount} face descriptors!`, 
-        type: "success" 
-      });
+      await API.post(`/school/${selectedSchool}/regenerate-descriptors`);
+      const result = await pollDescriptorsReady(selectedSchool);
+      if (result.status === 'ready') {
+        setPopup({ show: true, message: `Face descriptors ready: ${result.count}`, type: 'success' });
+        setRefreshKey(k => k + 1);
+      } else if (result.status === 'error') {
+        setPopup({ show: true, message: `Descriptor regeneration failed`, type: 'error' });
+      } else {
+        setPopup({ show: true, message: 'Descriptor regeneration timed out', type: 'error' });
+      }
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || "Failed to regenerate descriptors";
       setPopup({ show: true, message: errorMessage, type: "error" });
@@ -231,6 +251,7 @@ export default function Dashboard() {
         schoolId={selectedSchool}
         onVerifyResult={handleVerifyResult}
         selectedDay={selectedDay}
+        refreshKey={refreshKey}
       />
       {showModal && (
         <AddSchoolModal
