@@ -25,14 +25,23 @@ export default function SchoolDropdown({ schools, selected, onChange, onSchoolDe
   };
 
   // Format how each school appears
-  const formatLabel = (s) => (s?.affNo ? `${s.name} (${s.affNo})` : s?.name || "");
+  const formatLabel = (s) => {
+    if (!s) return "";
+    const parts = [s.name];
+    if (s.affNo) parts.push(`AffNo: ${s.affNo}`);
+    const ageGroups = Array.isArray(s.ageGroups) ? s.ageGroups.filter(Boolean) : [];
+    if (ageGroups.length) parts.push(`Age: ${ageGroups.join(', ')}`);
+    return parts.join(' | ');
+  };
 
-  // Filter schools by search query (match name or affNo)
+  // Filter schools by search query (match name, affNo, or age groups)
   const filteredSchools = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return q
       ? schools.filter(s => (
-          (s.name || "").toLowerCase().includes(q) || (s.affNo || "").toLowerCase().includes(q)
+          (s.name || "").toLowerCase().includes(q) ||
+          (s.affNo || "").toLowerCase().includes(q) ||
+          (Array.isArray(s.ageGroups) ? s.ageGroups.some(g => (g || "").toLowerCase().includes(q)) : false)
         ))
       : schools;
   }, [schools, searchQuery]);
