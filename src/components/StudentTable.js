@@ -246,7 +246,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
     setCurrentStudent(null);
   };
 
-  const isLaterDay = selectedDay !== 'day1';
+  
 
   return (
     <div>
@@ -345,9 +345,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
               <th className="p-2 border text-xs sm:text-sm">Class</th>
               <th className="p-2 border text-xs sm:text-sm">D.O.B</th>
               
-              {isLaterDay && (
-                <th className="p-2 border text-xs sm:text-sm">Day 1 Photo</th>
-              )}
+              <th className="p-2 border text-xs sm:text-sm">Day 1 Photo</th>
               <th className="p-2 border text-xs sm:text-sm">Status</th>
               <th className="p-2 border text-xs sm:text-sm">Action</th>
               <th className="p-2 border text-xs sm:text-sm">Manual Verification</th>
@@ -362,15 +360,13 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                 <td className="p-2 border text-xs sm:text-sm">{student.class}</td>
                 <td className="p-2 border text-xs sm:text-sm">{student.dob}</td>
                 
-                {isLaterDay && (
-                  <td className="p-2 border text-xs sm:text-sm">
-                    {student.day1Photo ? (
-                      <img src={student.day1Photo} alt="Day 1" className="w-16 h-16 object-cover rounded border" />
-                    ) : (
-                      <span className="text-gray-500">No photo</span>
-                    )}
-                  </td>
-                )}
+                <td className="p-2 border text-xs sm:text-sm">
+                  {student.day1Photo ? (
+                    <img src={student.day1Photo} alt="Day 1" className="w-16 h-16 object-cover rounded border" />
+                  ) : (
+                    <span className="text-gray-500">No photo</span>
+                  )}
+                </td>
                 <td className="p-2 border text-xs sm:text-sm">
                   {student.dayResult === "success"
                     ? <span className="text-green-600">✅ Verified</span>
