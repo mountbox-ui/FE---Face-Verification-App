@@ -16,7 +16,11 @@ function App() {
           <Route path="/" element={<LoginPage />} />
           <Route
             path="/dashboard"
-            element={<Dashboard />} />
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
         </Routes>
       </Router></>
   );
