@@ -114,7 +114,7 @@ export default function SchoolDropdown({ schools, selected, onChange, onSchoolDe
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-      <div className="relative w-full sm:w-64" ref={dropdownRef}>
+      <div className="relative w-full sm:w-96" ref={dropdownRef}>
         <input
           ref={inputRef}
           type="text"

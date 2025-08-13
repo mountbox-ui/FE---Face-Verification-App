@@ -5,6 +5,7 @@ import SchoolDropdown from "../components/SchoolDropdown";
 import StudentTable from "../components/StudentTable";
 import Popup from "../components/Popup";
 import * as faceapi from 'face-api.js';
+import { useMemo } from "react";
 
 export default function Dashboard() {
   // State variables
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
   const [selectedDay, setSelectedDay] = useState("day1"); // day1..day6
   const [refreshKey, setRefreshKey] = useState(0);
+  const [selectedSchoolDetails, setSelectedSchoolDetails] = useState(null);
 
   useEffect(() => {
     fetchSchools();
@@ -22,6 +24,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (selectedSchool) fetchStudents(selectedSchool, selectedDay);
+    if (selectedSchool) fetchSelectedSchoolDetails(selectedSchool);
   }, [selectedSchool, selectedDay]);
 
   const fetchSchools = async () => {
@@ -34,6 +37,15 @@ export default function Dashboard() {
     // Use student list endpoint with day projection
     const res = await API.get(`/student`, { params: { schoolId, day } });
     setStudents(res.data.students || res.data);
+  };
+
+  const fetchSelectedSchoolDetails = async (schoolId) => {
+    try {
+      const res = await API.get(`/school/${schoolId}`);
+      setSelectedSchoolDetails(res.data);
+    } catch (e) {
+      setSelectedSchoolDetails(null);
+    }
   };
 
   const handleAddSchool = () => setShowModal(true);
@@ -255,6 +267,21 @@ export default function Dashboard() {
             Regenerate Face Descriptors
           </button>
         </div>
+
+        {/* School info header */}
+        {selectedSchoolDetails && (
+          <div className="bg-white rounded shadow p-3">
+            <div className="text-sm sm:text-base font-semibold">
+              {selectedSchoolDetails.name}
+            </div>
+            <div className="text-xs sm:text-sm text-gray-600">
+              Affiliation No: {selectedSchoolDetails.affNo || 'N/A'}
+            </div>
+            <div className="text-xs sm:text-sm text-gray-600">
+              Age Group: {students[0]?.ageGroup || 'N/A'}
+            </div>
+          </div>
+        )}
         
         <div className="flex flex-col sm:flex-row gap-2">
           <button

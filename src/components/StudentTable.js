@@ -344,7 +344,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
               <th className="p-2 border text-xs sm:text-sm">Name</th>
               <th className="p-2 border text-xs sm:text-sm">Class</th>
               <th className="p-2 border text-xs sm:text-sm">D.O.B</th>
-              <th className="p-2 border text-xs sm:text-sm">Age Group</th>
+              
               {isLaterDay && (
                 <th className="p-2 border text-xs sm:text-sm">Day 1 Photo</th>
               )}
@@ -361,7 +361,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                 <td className="p-2 border text-xs sm:text-sm">{student.name}</td>
                 <td className="p-2 border text-xs sm:text-sm">{student.class}</td>
                 <td className="p-2 border text-xs sm:text-sm">{student.dob}</td>
-                <td className="p-2 border text-xs sm:text-sm">{student.ageGroup}</td>
+                
                 {isLaterDay && (
                   <td className="p-2 border text-xs sm:text-sm">
                     {student.day1Photo ? (
