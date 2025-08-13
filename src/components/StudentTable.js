@@ -124,7 +124,9 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
     setManualVerifyingId(student._id);
     
     try {
-      const response = await API.post(`/student/${student._id}/manual-verify`);
+      const response = await API.post(`/student/${student._id}/manual-verify`, {
+        day: selectedDay
+      });
       onVerifyResult("success", `Manually verified ${student.name} successfully.`);
     } catch (err) {
       console.error('Manual verification error:', err);
@@ -370,11 +372,11 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                   </td>
                 )}
                 <td className="p-2 border text-xs sm:text-sm">
-                  {student.verificationResult === "success"
+                  {student.dayResult === "success"
                     ? <span className="text-green-600">✅ Verified</span>
-                    : student.verificationResult === "manually_verified"
+                    : student.dayResult === "manually_verified"
                     ? <span className="text-blue-600 font-medium">👤 Manually Verified</span>
-                    : student.verificationResult === "failed"
+                    : student.dayResult === "failed"
                     ? <span className="text-red-600">❌ Failed</span>
                     : <span className="text-gray-600">⏳ Pending</span>
                   }
@@ -383,7 +385,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                   <button
                     className="bg-blue-500 text-white px-2 sm:px-3 py-1 rounded hover:bg-blue-600 disabled:opacity-50 text-xs sm:text-sm"
                     onClick={() => handleVerify(student)}
-                    disabled={verifyingId === student._id || student.verificationResult === "success" || student.verificationResult === "manually_verified"}
+                    disabled={verifyingId === student._id || student.dayResult === "success" || student.dayResult === "manually_verified"}
                   >
                     {verifyingId === student._id ? "Verifying..." : "Verify"}
                   </button>
@@ -392,7 +394,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                   <button
                     className="bg-purple-500 text-white px-2 sm:px-3 py-1 rounded hover:bg-purple-600 disabled:opacity-50 text-xs sm:text-sm"
                     onClick={() => handleManualVerify(student)}
-                    disabled={manualVerifyingId === student._id || student.verificationResult === "manually_verified"}
+                    disabled={manualVerifyingId === student._id || student.dayResult === "manually_verified"}
                   >
                     {manualVerifyingId === student._id ? "Verifying..." : "Manual Verify"}
                   </button>
