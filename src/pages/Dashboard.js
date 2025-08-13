@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import API from "../api/api";
 import AddSchoolModal from "../components/AddSchoolModal";
 import SchoolDropdown from "../components/SchoolDropdown";
@@ -17,6 +17,43 @@ export default function Dashboard() {
   const [selectedDay, setSelectedDay] = useState("day1"); // day1..day6
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedSchoolDetails, setSelectedSchoolDetails] = useState(null);
+  const [now, setNow] = useState(Date.now());
+
+  // Event start date (local time midnight). Configure via .env as REACT_APP_EVENT_START_DATE=2025-08-13
+  const eventStartDate = useMemo(() => {
+    const iso = process.env.REACT_APP_EVENT_START_DATE || new Date().toISOString().slice(0,10);
+    const d = new Date(`${iso}T00:00:00`);
+    return isNaN(d.getTime()) ? new Date(new Date().toISOString().slice(0,10) + 'T00:00:00') : d;
+  }, []);
+
+  // Build four consecutive days starting from start date
+  const days = useMemo(() => {
+    return new Array(4).fill(0).map((_, i) => {
+      const date = new Date(eventStartDate);
+      date.setDate(date.getDate() + i);
+      return {
+        key: `day${i + 1}`,
+        index: i + 1,
+        date,
+        label: formatDateLabel(date)
+      };
+    });
+  }, [eventStartDate]);
+
+  // Determine active day based on current date (local)
+  const activeDayIndex = useMemo(() => {
+    const today = new Date(new Date(now).toISOString().slice(0,10) + 'T00:00:00');
+    const diffDays = Math.floor((today - eventStartDate) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return 1; // before start -> treat day1 as active upcoming
+    if (diffDays > 3) return 4; // after 4-day window -> stick to day4
+    return diffDays + 1;
+  }, [now, eventStartDate]);
+
+  // Keep time updated to switch at midnight
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     fetchSchools();
@@ -146,6 +183,25 @@ export default function Dashboard() {
     }
   };
 
+  const handleDownloadDay = async (dayIndex) => {
+    try {
+      const res = await API.get(`/student/download/day/${dayIndex}` , {
+        params: { schoolId: selectedSchool },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `day_${dayIndex}_details.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setPopup({ show: true, message: `Day ${dayIndex} details downloaded!`, type: 'success' });
+    } catch (err) {
+      setPopup({ show: true, message: 'Day download failed', type: 'error' });
+    }
+  };
+
   const pollDescriptorsReady = async (schoolId, maxMs = 60000, intervalMs = 2000) => {
     const start = Date.now();
     while (Date.now() - start < maxMs) {
@@ -260,12 +316,9 @@ export default function Dashboard() {
               value={selectedDay}
               onChange={(e) => setSelectedDay(e.target.value)}
             >
-              <option value="day1">Day 1</option>
-              <option value="day2">Day 2</option>
-              <option value="day3">Day 3</option>
-              <option value="day4">Day 4</option>
-              <option value="day5">Day 5</option>
-              <option value="day6">Day 6</option>
+              {days.map(d => (
+                <option key={d.key} value={d.key}>{d.label}</option>
+              ))}
             </select>
             <button
               className="w-full sm:w-auto bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
@@ -301,6 +354,21 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        {/* Per-day downloads (enable for completed and current days only) */}
+        <div className="flex flex-wrap gap-2">
+          {days.map(d => (
+            <button
+              key={`dl-${d.key}`}
+              className={`px-3 py-2 rounded text-sm ${d.index <= activeDayIndex ? 'bg-teal-600 hover:bg-teal-700 text-white' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
+              onClick={() => handleDownloadDay(d.index)}
+              disabled={d.index > activeDayIndex}
+              title={`Download details for ${d.label}`}
+            >
+              Download {d.label}
+            </button>
+          ))}
+        </div>
       </div>
       
       <StudentTable
@@ -308,6 +376,10 @@ export default function Dashboard() {
         schoolId={selectedSchool}
         onVerifyResult={handleVerifyResult}
         selectedDay={selectedDay}
+        actionsEnabled={(() => {
+          const found = days.find(d => d.key === selectedDay);
+          return found ? found.index === activeDayIndex : false;
+        })()}
         refreshKey={refreshKey}
       />
       {showModal && (

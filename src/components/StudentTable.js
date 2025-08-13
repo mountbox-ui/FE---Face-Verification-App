@@ -3,7 +3,7 @@ import API from "../api/api";
 import * as faceapi from 'face-api.js';
 import '@tensorflow/tfjs';
 
-export default function StudentTable({ students, schoolId, onVerifyResult, selectedDay = 'day1', refreshKey }) {
+export default function StudentTable({ students, schoolId, onVerifyResult, selectedDay = 'day1', actionsEnabled = true, refreshKey }) {
   const [verifyingId, setVerifyingId] = useState(null);
   const [manualVerifyingId, setManualVerifyingId] = useState(null);
   const [reVerifyingId, setReVerifyingId] = useState(null);
@@ -389,7 +389,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                   <button
                     className="bg-blue-500 text-white px-2 sm:px-3 py-1 rounded hover:bg-blue-600 disabled:opacity-50 text-xs sm:text-sm"
                     onClick={() => handleVerify(student)}
-                    disabled={verifyingId === student._id || student.dayResult === "success" || student.dayResult === "manually_verified"}
+                    disabled={!actionsEnabled || verifyingId === student._id || student.dayResult === "success" || student.dayResult === "manually_verified"}
                   >
                     {verifyingId === student._id ? "Verifying..." : "Verify"}
                   </button>
@@ -398,7 +398,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                   <button
                     className="bg-purple-500 text-white px-2 sm:px-3 py-1 rounded hover:bg-purple-600 disabled:opacity-50 text-xs sm:text-sm"
                     onClick={() => handleManualVerify(student)}
-                    disabled={manualVerifyingId === student._id || student.dayResult === "manually_verified"}
+                    disabled={!actionsEnabled || manualVerifyingId === student._id || student.dayResult === "manually_verified"}
                   >
                     {manualVerifyingId === student._id ? "Verifying..." : "Manual Verify"}
                   </button>
@@ -407,7 +407,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                   <button
                     className="bg-orange-500 text-white px-2 sm:px-3 py-1 rounded hover:bg-orange-600 disabled:opacity-50 text-xs sm:text-sm"
                     onClick={() => handleReVerify(student)}
-                    disabled={reVerifyingId === student._id}
+                    disabled={!actionsEnabled || reVerifyingId === student._id}
                   >
                     {reVerifyingId === student._id ? "Resetting..." : "Re-verify"}
                   </button>
