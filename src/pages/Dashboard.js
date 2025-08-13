@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../api/api";
 import AddSchoolModal from "../components/AddSchoolModal";
 import SchoolDropdown from "../components/SchoolDropdown";
@@ -33,6 +34,7 @@ export default function Dashboard() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedSchoolDetails, setSelectedSchoolDetails] = useState(null);
   const [now, setNow] = useState(Date.now());
+  const navigate = useNavigate();
 
   // Event start date (local time midnight). Configure via .env as REACT_APP_EVENT_START_DATE=2025-08-13
   const eventStartDate = useMemo(() => {
@@ -69,6 +71,12 @@ export default function Dashboard() {
     const id = setInterval(() => setNow(Date.now()), 60 * 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Extra guard: if no token, redirect to login (in addition to ProtectedRoute)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) navigate('/', { replace: true });
+  }, [navigate]);
 
   useEffect(() => {
     fetchSchools();
