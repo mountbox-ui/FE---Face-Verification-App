@@ -16,12 +16,18 @@ function ordinalSuffix(n) {
   return 'th';
 }
 
+const nav = useNavigate()
+
 function formatDateLabel(date) {
   const d = new Date(date);
   const day = d.getDate();
   const month = d.toLocaleString('en-US', { month: 'short' });
   return `${day}${ordinalSuffix(day)} ${month}`;
 }
+
+useEffect(()=>{
+  nav('/');
+},[])
 
 export default function Dashboard() {
   // State variables
