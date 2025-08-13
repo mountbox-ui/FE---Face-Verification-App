@@ -5,7 +5,22 @@ import SchoolDropdown from "../components/SchoolDropdown";
 import StudentTable from "../components/StudentTable";
 import Popup from "../components/Popup";
 import * as faceapi from 'face-api.js';
-import { useMemo } from "react";
+
+// Format like "13th Aug"
+function ordinalSuffix(n) {
+  const j = n % 10, k = n % 100;
+  if (j === 1 && k !== 11) return 'st';
+  if (j === 2 && k !== 12) return 'nd';
+  if (j === 3 && k !== 13) return 'rd';
+  return 'th';
+}
+
+function formatDateLabel(date) {
+  const d = new Date(date);
+  const day = d.getDate();
+  const month = d.toLocaleString('en-US', { month: 'short' });
+  return `${day}${ordinalSuffix(day)} ${month}`;
+}
 
 export default function Dashboard() {
   // State variables
