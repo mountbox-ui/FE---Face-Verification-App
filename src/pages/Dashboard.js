@@ -246,46 +246,45 @@ export default function Dashboard() {
       </div>
       
       <div className="flex flex-col gap-4 mb-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-          <SchoolDropdown
-            schools={schools}
-            selected={selectedSchool}
-            onChange={setSelectedSchool}
-            onSchoolDeleted={handleSchoolDeleted}
-          />
-          <select
-            className="w-full sm:w-auto border rounded px-3 py-2"
-            value={selectedDay}
-            onChange={(e) => setSelectedDay(e.target.value)}
-          >
-            <option value="day1">Day 1</option>
-            <option value="day2">Day 2</option>
-            <option value="day3">Day 3</option>
-            <option value="day4">Day 4</option>
-            <option value="day5">Day 5</option>
-            <option value="day6">Day 6</option>
-          </select>
-          <button
-            className="w-full sm:w-auto bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-            onClick={handleRegenerateDescriptors}
-          >
-            Regenerate Face Descriptors
-          </button>
-        </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 justify-between w-full">
+          {/* Left controls */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-1 flex-wrap">
+            <SchoolDropdown
+              schools={schools}
+              selected={selectedSchool}
+              onChange={setSelectedSchool}
+              onSchoolDeleted={handleSchoolDeleted}
+            />
+            <select
+              className="w-full sm:w-auto border rounded px-3 py-2"
+              value={selectedDay}
+              onChange={(e) => setSelectedDay(e.target.value)}
+            >
+              <option value="day1">Day 1</option>
+              <option value="day2">Day 2</option>
+              <option value="day3">Day 3</option>
+              <option value="day4">Day 4</option>
+              <option value="day5">Day 5</option>
+              <option value="day6">Day 6</option>
+            </select>
+            <button
+              className="w-full sm:w-auto bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+              onClick={handleRegenerateDescriptors}
+            >
+              Regenerate Face Descriptors
+            </button>
+          </div>
 
-        {/* Downloads row (above school name) */}
-        <div className="flex flex-col sm:flex-row gap-2 justify-end">
-          {/* Hidden buttons as requested */}
-          {/* <button className="hidden bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm" onClick={handleDownload}>Download All Profiles</button> */}
-          {/* <button className="hidden bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 text-sm" onClick={handleDownloadAllVerified}>Download All Schools Verified</button> */}
-          {/* <button className="hidden bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm" onClick={handleDownloadSelectedDay}>Download Selected Day</button> */}
-          <button
-            className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm sm:ml-auto"
-            onClick={handleDownloadVerifiedOnly}
-            title="Download only verified profiles for current school"
-          >
-            Download Verified Only
-          </button>
+          {/* Right-aligned download */}
+          <div className="w-full sm:w-auto sm:ml-4">
+            <button
+              className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
+              onClick={handleDownloadVerifiedOnly}
+              title="Download only verified profiles for current school"
+            >
+              Download Verified Only
+            </button>
+          </div>
         </div>
 
         {/* School info header */}
