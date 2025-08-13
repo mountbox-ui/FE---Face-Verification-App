@@ -20,7 +20,8 @@ function App() {
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
-            } />
+            }
+          />
         </Routes>
       </Router></>
   );
