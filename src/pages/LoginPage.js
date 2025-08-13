@@ -14,9 +14,12 @@ export default function LoginPage() {
     setError("");
     try {
       const res = await API.post("/auth/login", { username, password });
+      console.log('LoginPage: Received token:', res.data.token ? 'Token received' : 'No token');
       localStorage.setItem("token", res.data.token);
+      console.log('LoginPage: Token stored in localStorage');
       navigate("/dashboard");
     } catch (err) {
+      console.error('LoginPage: Login error:', err);
       setError("Invalid credentials");
     }
   };
