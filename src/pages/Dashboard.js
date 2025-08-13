@@ -343,14 +343,32 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* Right-aligned download */}
+          {/* Right-aligned download (uses selected day) */}
           <div className="w-full sm:w-auto sm:ml-4">
             <button
               className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
-              onClick={handleDownloadVerifiedOnly}
-              title="Download only verified profiles for current school"
+              onClick={async () => {
+                try {
+                  const found = days.find(d => d.key === selectedDay);
+                  const dayIndex = found?.index;
+                  const res = await API.get(`/school/${selectedSchool}/download/verified-only`, {
+                    params: dayIndex ? { dayNumber: dayIndex } : {},
+                    responseType: 'blob'
+                  });
+                  const url = window.URL.createObjectURL(new Blob([res.data]));
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.setAttribute('download', `verified_only_${found?.label || 'selected'}.xlsx`);
+                  document.body.appendChild(link);
+                  link.click();
+                  link.remove();
+                } catch (err) {
+                  setPopup({ show: true, message: 'Download failed', type: 'error' });
+                }
+              }}
+              title="Download only verified"
             >
-              Download Verified Only
+              Download only verified
             </button>
           </div>
         </div>
@@ -370,20 +388,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Per-day downloads (enable for completed and current days only) */}
-        <div className="flex flex-wrap gap-2">
-          {days.map(d => (
-            <button
-              key={`dl-${d.key}`}
-              className={`px-3 py-2 rounded text-sm ${d.index <= activeDayIndex ? 'bg-teal-600 hover:bg-teal-700 text-white' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
-              onClick={() => handleDownloadDay(d.index)}
-              disabled={d.index > activeDayIndex}
-              title={`Download details for ${d.label}`}
-            >
-              Download {d.label}
-            </button>
-          ))}
-        </div>
+        {/* Per-day downloads removed per request */}
       </div>
       
       <StudentTable
