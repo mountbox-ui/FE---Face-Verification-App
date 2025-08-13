@@ -144,12 +144,20 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
     setReVerifyingId(student._id);
     
     try {
-      // Reset verification status to pending
-      await API.post(`/student/${student._id}/reset-verification`, {
-        // If re-verifying on Day 1, also clear the stored Day 1 photo so it can be replaced
-        clearDay1Photo: selectedDay === 'day1'
+      const dayNumber = parseInt(selectedDay.replace('day', ''), 10);
+
+      // If Day 1, clear stored Day 1 photo so it can be replaced on next verification
+      if (selectedDay === 'day1') {
+        await API.post(`/student/${student._id}/reset-verification`, { clearDay1Photo: true });
+      }
+
+      // Revert current day's verification to pending for this student
+      await API.post(`/student/${student._id}/day/${dayNumber}/result`, {
+        result: 'pending',
+        confidence: null
       });
-      onVerifyResult("success", `Reset verification status for ${student.name}. You can now verify them again.`);
+
+      onVerifyResult("success", `Reverted ${selectedDay} status to Pending for ${student.name}.`);
     } catch (err) {
       console.error('Re-verification reset error:', err);
       onVerifyResult("failed", `Failed to reset verification: ${err.message}`);
