@@ -287,26 +287,25 @@ export default function Dashboard() {
       return;
     }
 
-    // Try client-side first
-    const localOk = await clientSideRegenerate();
-    if (localOk) return;
-
-    // Fallback to server-driven regeneration
+    // Try server-side first
     try {
-      setPopup({ show: true, message: "Local regen failed. Trying server...", type: "info" });
+      setPopup({ show: true, message: "Regenerating face descriptors on server...", type: "info" });
       await API.post(`/school/${selectedSchool}/regenerate-descriptors`);
       const result = await pollDescriptorsReady(selectedSchool);
       if (result.status === 'ready') {
         setPopup({ show: true, message: `Face descriptors ready: ${result.count}`, type: 'success' });
         setRefreshKey(k => k + 1);
       } else if (result.status === 'error') {
-        setPopup({ show: true, message: `Descriptor regeneration failed on server`, type: 'error' });
+        setPopup({ show: true, message: `Server regeneration failed. Trying locally...`, type: 'error' });
+        await clientSideRegenerate();
       } else {
-        setPopup({ show: true, message: 'Descriptor regeneration timed out on server', type: 'error' });
+        setPopup({ show: true, message: 'Server regeneration timed out. Trying locally...', type: 'error' });
+        await clientSideRegenerate();
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || "Failed to regenerate descriptors";
-      setPopup({ show: true, message: errorMessage, type: "error" });
+      const errorMessage = err.response?.data?.message || err.message || "Server regeneration failed";
+      setPopup({ show: true, message: `${errorMessage}. Trying locally...`, type: "error" });
+      await clientSideRegenerate();
     }
   };
 
