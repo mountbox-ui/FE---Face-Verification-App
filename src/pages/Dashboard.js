@@ -268,6 +268,21 @@ export default function Dashboard() {
           </button>
         </div>
 
+        {/* Downloads row (above school name) */}
+        <div className="flex flex-col sm:flex-row gap-2 justify-end">
+          {/* Hidden buttons as requested */}
+          {/* <button className="hidden bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm" onClick={handleDownload}>Download All Profiles</button> */}
+          {/* <button className="hidden bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 text-sm" onClick={handleDownloadAllVerified}>Download All Schools Verified</button> */}
+          {/* <button className="hidden bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm" onClick={handleDownloadSelectedDay}>Download Selected Day</button> */}
+          <button
+            className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm sm:ml-auto"
+            onClick={handleDownloadVerifiedOnly}
+            title="Download only verified profiles for current school"
+          >
+            Download Verified Only
+          </button>
+        </div>
+
         {/* School info header */}
         {selectedSchoolDetails && (
           <div className="bg-white rounded shadow p-3">
@@ -282,37 +297,6 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-        
-        <div className="flex flex-col sm:flex-row gap-2">
-          <button
-            className="w-full sm:w-auto bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm"
-            onClick={handleDownload}
-            title="Download all profiles for current school"
-          >
-            Download All Profiles
-          </button>
-          <button
-            className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
-            onClick={handleDownloadVerifiedOnly}
-            title="Download only verified profiles for current school"
-          >
-            Download Verified Only
-          </button>
-          <button
-            className="w-full sm:w-auto bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 text-sm"
-            onClick={handleDownloadAllVerified}
-            title="Download verified profiles from all schools"
-          >
-            Download All Schools Verified
-          </button>
-          <button
-            className="w-full sm:w-auto bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 text-sm"
-            onClick={handleDownloadSelectedDay}
-            title="Download details for selected day"
-          >
-            Download Selected Day
-          </button>
-        </div>
       </div>
       
       <StudentTable
