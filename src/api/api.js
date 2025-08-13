@@ -13,19 +13,4 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Add response interceptor to handle authentication errors
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // If we get a 401 (Unauthorized) or 403 (Forbidden) error, the token is invalid
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      console.log('API: Authentication error, clearing token and redirecting');
-      localStorage.removeItem('token');
-      // Redirect to login page
-      window.location.href = '/';
-    }
-    return Promise.reject(error);
-  }
-);
-
 export default API;

@@ -34,7 +34,6 @@ export default function Dashboard() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedSchoolDetails, setSelectedSchoolDetails] = useState(null);
   const [now, setNow] = useState(Date.now());
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
   // Event start date (local time midnight). Configure via .env as REACT_APP_EVENT_START_DATE=2025-08-13
@@ -76,51 +75,12 @@ export default function Dashboard() {
   // Extra guard: if no token, redirect to login (in addition to ProtectedRoute)
   useEffect(() => {
     const token = localStorage.getItem('token');
-    // Check if token exists and has a valid format (basic validation)
-    if (!token || token === 'null' || token === 'undefined' || token.trim() === '') {
-      console.log('No valid token found, redirecting to login');
-      navigate('/', { replace: true });
-      return;
-    }
-    
-    // Additional validation: check if token looks like a valid JWT format
-    const tokenParts = token.split('.');
-    if (tokenParts.length !== 3) {
-      console.log('Invalid token format, redirecting to login');
-      localStorage.removeItem('token'); // Clean up invalid token
-      navigate('/', { replace: true });
-      return;
-    }
+    if (!token) navigate('/', { replace: true });
   }, [navigate]);
 
-  // Immediate authentication check before any API calls
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    console.log('Dashboard: Checking token on mount:', token ? 'Token exists' : 'No token');
-    
-    if (!token || token === 'null' || token === 'undefined' || token.trim() === '') {
-      console.log('Dashboard: No valid token found, redirecting immediately');
-      navigate('/', { replace: true });
-      return;
-    }
-    
-    console.log('Dashboard: Token validated, proceeding with data fetch');
-    setIsAuthenticated(true);
-    // Only fetch schools if we have a valid token
     fetchSchools();
-  }, [navigate]);
-
-  // Additional authentication check that runs on every render
-  useEffect(() => {
-    if (!isAuthenticated) return; // Skip if not yet authenticated
-    
-    const token = localStorage.getItem('token');
-    if (!token || token === 'null' || token === 'undefined' || token.trim() === '') {
-      console.log('Dashboard: Token lost during session, redirecting');
-      setIsAuthenticated(false);
-      navigate('/', { replace: true });
-    }
-  });
+  }, []);
 
   useEffect(() => {
     if (selectedSchool) fetchStudents(selectedSchool, selectedDay);
@@ -348,16 +308,6 @@ export default function Dashboard() {
       await clientSideRegenerate();
     }
   };
-
-  // Don't render anything if not authenticated
-  if (!isAuthenticated) {
-    return <div className="min-h-screen bg-gray-100 p-4 sm:p-6 flex items-center justify-center">
-      <div className="text-center">
-        <div className="text-lg">Loading...</div>
-        <div className="text-sm text-gray-500 mt-2">Checking authentication...</div>
-      </div>
-    </div>;
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
