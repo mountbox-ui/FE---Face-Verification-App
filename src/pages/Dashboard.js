@@ -195,8 +195,10 @@ export default function Dashboard() {
       await API.post(`/school/${selectedSchool}/group-descriptors`, { descriptors });
       setRefreshKey(k => k + 1);
       setPopup({ show: true, message: `Face descriptors ready: ${descriptors.length}`, type: 'success' });
+      return true;
     } catch (e) {
       setPopup({ show: true, message: e.message || 'Client-side regeneration failed', type: 'error' });
+      return false;
     }
   };
 
@@ -206,19 +208,22 @@ export default function Dashboard() {
       return;
     }
 
+    // Try client-side first
+    const localOk = await clientSideRegenerate();
+    if (localOk) return;
+
+    // Fallback to server-driven regeneration
     try {
-      setPopup({ show: true, message: "Regenerating face descriptors...", type: "info" });
+      setPopup({ show: true, message: "Local regen failed. Trying server...", type: "info" });
       await API.post(`/school/${selectedSchool}/regenerate-descriptors`);
       const result = await pollDescriptorsReady(selectedSchool);
       if (result.status === 'ready') {
         setPopup({ show: true, message: `Face descriptors ready: ${result.count}`, type: 'success' });
         setRefreshKey(k => k + 1);
       } else if (result.status === 'error') {
-        setPopup({ show: true, message: `Descriptor regeneration failed on server. Trying locally...`, type: 'error' });
-        await clientSideRegenerate();
+        setPopup({ show: true, message: `Descriptor regeneration failed on server`, type: 'error' });
       } else {
-        setPopup({ show: true, message: 'Descriptor regeneration timed out on server. Trying locally...', type: 'error' });
-        await clientSideRegenerate();
+        setPopup({ show: true, message: 'Descriptor regeneration timed out on server', type: 'error' });
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || "Failed to regenerate descriptors";
