@@ -102,9 +102,19 @@ export default function Dashboard() {
 
   const handleAddSchool = () => setShowModal(true);
 
-  const handleSchoolAdded = () => {
+  const handleSchoolAdded = (newSchool) => {
     setShowModal(false);
     fetchSchools();
+    if (newSchool?._id) {
+      setSelectedSchool(newSchool._id);
+      setSelectedSchoolDetails(prev => ({
+        ...(prev || {}),
+        _id: newSchool._id,
+        name: newSchool.name,
+        affNo: newSchool.affNo,
+        coachName: newSchool.coachName
+      }));
+    }
     setPopup({ show: true, message: "School added successfully!", type: "success" });
   };
 
@@ -363,6 +373,9 @@ export default function Dashboard() {
             </div>
             <div className="text-xs sm:text-sm text-gray-600">
               Age Group: {students[0]?.ageGroup || 'N/A'}
+            </div>
+            <div className="text-xs sm:text-sm text-gray-600">
+              Coach Name: {selectedSchoolDetails.coachName || 'N/A'}
             </div>
           </div>
         )}

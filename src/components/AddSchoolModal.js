@@ -15,11 +15,11 @@ export default function AddSchoolModal({ onClose, onSuccess }) {
     if (groupPhoto) formData.append("groupPhoto", groupPhoto);
 
     try {
-      await API.post("https://be-face-verification-app.onrender.com/api/school/add", formData, {
+      const res = await API.post("/school/add", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setLoading(false);
-      onSuccess();
+      onSuccess(res?.data?.school);
     } catch {
       setLoading(false);
       alert("Failed to add school");

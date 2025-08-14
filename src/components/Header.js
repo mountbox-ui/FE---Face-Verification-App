@@ -24,10 +24,26 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Login Page Layout - Centered Title Only */}
           {location.pathname === '/' && (
-            <div className="flex-1 flex justify-center">
-              <h1 className="text-xl font-bold text-white">
-                Face Verification App
-              </h1>
+            <div className="w-full grid grid-cols-3 items-center">
+              {/* Left: Brand Logo */}
+              <div className="justify-self-start flex items-center">
+                <img
+                  className="h-8 w-auto"
+                  src="/Logo (1).svg"
+                  alt="Face Verification App Logo"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              </div>
+
+              {/* Center: Title */}
+              <div className="justify-self-center">
+                <h1 className="text-xl font-bold text-white">
+                  Face Verification App
+                </h1>
+              </div>
+
+              {/* Right: empty to keep center perfectly centered */}
+              <div className="justify-self-end" />
             </div>
           )}
 

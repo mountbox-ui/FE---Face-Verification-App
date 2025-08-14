@@ -370,7 +370,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                 
                 <td className="p-2 border text-xs sm:text-sm">
                   {student.day1Photo ? (
-                    <img src={student.day1Photo} alt="Day 1" className="w-16 h-16 object-cover rounded border" />
+                    <img src={student.day1Photo} alt="Day 1" className="w-16 h-16 object-cover rounded border transform transition-transform duration-200 ease-out cursor-zoom-in hover:scale-150 z-50" />
                   ) : (
                     <span className="text-gray-500">No photo</span>
                   )}
@@ -434,7 +434,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
               <img
                 src={groupPhoto}
                 alt="Group Photo"
-                className="max-w-full h-auto max-h-64 sm:max-h-96 rounded shadow-lg"
+                className="max-w-full h-auto max-h-64 sm:max-h-96 rounded shadow-lg transform transition-transform duration-200 ease-out hover:scale-105 cursor-zoom-in"
                 onError={(e) => {
                   console.error('Error loading group photo:', e);
                   e.target.style.display = 'none';
