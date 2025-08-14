@@ -304,17 +304,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold">Face Verification App</h1>
-        {selectedDay === 'day1' && (
-          <button
-            className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            onClick={handleAddSchool}
-          >
-            Add School
-          </button>
-        )}
-      </div>
       
       <div className="flex flex-col gap-4 mb-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 justify-between w-full">
@@ -343,8 +332,8 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* Right-aligned download */}
-          <div className="w-full sm:w-auto sm:ml-4">
+          {/* Right-aligned controls */}
+          <div className="w-full sm:w-auto sm:ml-4 flex gap-2 justify-end">
             <button
               className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
               onClick={handleDownloadVerifiedOnly}
@@ -352,6 +341,14 @@ export default function Dashboard() {
             >
               Download Verified Only
             </button>
+            {selectedDay === 'day1' && (
+              <button
+                className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                onClick={handleAddSchool}
+              >
+                Add School
+              </button>
+            )}
           </div>
         </div>
 
