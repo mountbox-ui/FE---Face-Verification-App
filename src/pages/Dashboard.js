@@ -112,7 +112,8 @@ export default function Dashboard() {
         _id: newSchool._id,
         name: newSchool.name,
         affNo: newSchool.affNo,
-        coachName: newSchool.coachName
+        coachName: newSchool.coachName,
+        coachPhone: newSchool.coachPhone
       }));
     }
     setPopup({ show: true, message: "School added successfully!", type: "success" });
@@ -375,7 +376,7 @@ export default function Dashboard() {
               Age Group: {students[0]?.ageGroup || 'N/A'}
             </div>
             <div className="text-xs sm:text-sm text-gray-600">
-              Coach Name: {selectedSchoolDetails.coachName || 'N/A'}
+              Coach Name: {selectedSchoolDetails.coachName || 'N/A'}{selectedSchoolDetails.coachPhone ? ` | Phone: ${selectedSchoolDetails.coachPhone}` : ''}
             </div>
           </div>
         )}
