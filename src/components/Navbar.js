@@ -7,7 +7,8 @@ export default function Navbar({ showLogout = true }) {
 	const isLoggedIn = useMemo(() => Boolean(localStorage.getItem("token")), []);
 	const brandName = process.env.REACT_APP_BRAND_NAME || "MountBox";
 	const configuredLogo = process.env.REACT_APP_NAV_LOGO_URL || localStorage.getItem("navLogoUrl");
-	const logoSrc = configuredLogo || "/MountBox Logo.png";
+	const defaultLogo = (process.env.PUBLIC_URL || "") + "/MountBox Logo.png";
+	const logoSrc = configuredLogo || defaultLogo;
 
 	const handleLogout = () => {
 		localStorage.removeItem("token");
