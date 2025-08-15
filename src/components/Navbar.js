@@ -5,7 +5,6 @@ export default function Navbar({ showLogout = true }) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const isLoggedIn = useMemo(() => Boolean(localStorage.getItem("token")), []);
-	const brandName = process.env.REACT_APP_BRAND_NAME || "MountBox";
 	const configuredLogo = process.env.REACT_APP_NAV_LOGO_URL || localStorage.getItem("navLogoUrl");
 	const defaultLogo = (process.env.PUBLIC_URL || "") + "/MountBox Logo.png";
 	const logoSrc = configuredLogo || defaultLogo;
@@ -18,9 +17,8 @@ export default function Navbar({ showLogout = true }) {
 	return (
 		<div className="w-full bg-[#0C0646] text-white">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-				<div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(isLoggedIn ? "/dashboard" : "/") }>
-					<img src={logoSrc} alt={brandName} className="h-6 w-6 object-contain" />
-					<span className="font-semibold">{brandName}</span>
+				<div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate(isLoggedIn ? "/dashboard" : "/") }>
+					<img src={logoSrc} alt="Brand logo" className="h-8 w-auto object-contain" />
 				</div>
 				<div className="text-sm sm:text-base font-semibold text-center flex-1">
 					Face Verification App
