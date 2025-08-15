@@ -1,6 +1,5 @@
 import { useState } from "react";
 import API from "../api/api";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
