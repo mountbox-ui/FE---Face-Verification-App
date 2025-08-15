@@ -5,6 +5,7 @@ import AddSchoolModal from "../components/AddSchoolModal";
 import SchoolDropdown from "../components/SchoolDropdown";
 import StudentTable from "../components/StudentTable";
 import Popup from "../components/Popup";
+import Navbar from "../components/Navbar";
 import * as faceapi from 'face-api.js';
 
 // Format like "13th Aug"
@@ -310,18 +311,19 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold">Face Verification App</h1>
-        {selectedDay === 'day1' && (
-          <button
-            className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            onClick={handleAddSchool}
-          >
-            Add School
-          </button>
-        )}
-      </div>
+    <div className="min-h-screen bg-gray-100">
+      <Navbar />
+      <div className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+          {selectedDay === 'day1' && (
+            <button
+              className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              onClick={handleAddSchool}
+            >
+              Add School
+            </button>
+          )}
+        </div>
       
       <div className="flex flex-col gap-4 mb-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 justify-between w-full">
@@ -373,9 +375,9 @@ export default function Dashboard() {
                   setPopup({ show: true, message: 'Download failed', type: 'error' });
                 }
               }}
-              title="Download only verified"
+              title="Download Verified Only"
             >
-              Download only verified
+              Download Verified Only
             </button>
           </div>
         </div>
@@ -398,29 +400,30 @@ export default function Dashboard() {
         {/* Per-day downloads removed per request */}
       </div>
       
-      <StudentTable
-        students={students}
-        schoolId={selectedSchool}
-        onVerifyResult={handleVerifyResult}
-        selectedDay={selectedDay}
-        actionsEnabled={(() => {
-          const found = days.find(d => d.key === selectedDay);
-          return found ? found.index === activeDayIndex : false;
-        })()}
-        refreshKey={refreshKey}
-      />
-      {showModal && (
-        <AddSchoolModal
-          onClose={() => setShowModal(false)}
-          onSuccess={handleSchoolAdded}
+        <StudentTable
+          students={students}
+          schoolId={selectedSchool}
+          onVerifyResult={handleVerifyResult}
+          selectedDay={selectedDay}
+          actionsEnabled={(() => {
+            const found = days.find(d => d.key === selectedDay);
+            return found ? found.index === activeDayIndex : false;
+          })()}
+          refreshKey={refreshKey}
         />
-      )}
-      <Popup
-        show={popup.show}
-        message={popup.message}
-        type={popup.type}
-        onClose={() => setPopup({ ...popup, show: false })}
-      />
+        {showModal && (
+          <AddSchoolModal
+            onClose={() => setShowModal(false)}
+            onSuccess={handleSchoolAdded}
+          />
+        )}
+        <Popup
+          show={popup.show}
+          message={popup.message}
+          type={popup.type}
+          onClose={() => setPopup({ ...popup, show: false })}
+        />
+      </div>
     </div>
   );
 }
