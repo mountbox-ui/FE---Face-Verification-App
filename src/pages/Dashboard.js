@@ -314,16 +314,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-100">
       <Navbar />
       <div className="p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          {selectedDay === 'day1' && (
-            <button
-              className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              onClick={handleAddSchool}
-            >
-              Add School
-            </button>
-          )}
-        </div>
+        <div className="mb-4" />
       
       <div className="flex flex-col gap-4 mb-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 justify-between w-full">
@@ -352,8 +343,16 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* Right-aligned download (uses selected day) */}
-          <div className="w-full sm:w-auto sm:ml-4">
+          {/* Right-aligned controls */}
+          <div className="w-full sm:w-auto sm:ml-4 flex items-center justify-end gap-2">
+            {selectedDay === 'day1' && (
+              <button
+                className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
+                onClick={handleAddSchool}
+              >
+                Add School
+              </button>
+            )}
             <button
               className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
               onClick={async () => {
