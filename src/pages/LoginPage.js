@@ -24,8 +24,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar showLogout={false} />
-      <div className="flex items-center justify-center py-16">
-        <form className="bg-white p-8 rounded shadow-md w-80" onSubmit={handleLogin}>
+      <div className="flex items-center justify-center min-h-[calc(100vh-56px)] px-4">
+        <form className="bg-white p-8 rounded shadow-lg w-full max-w-sm" onSubmit={handleLogin}>
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         <input
           className="w-full mb-4 p-2 border rounded"
