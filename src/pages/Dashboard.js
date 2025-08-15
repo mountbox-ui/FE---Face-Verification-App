@@ -393,6 +393,12 @@ export default function Dashboard() {
             <div className="text-xs sm:text-sm text-gray-600">
               Age Group: {students[0]?.ageGroup || 'N/A'}
             </div>
+            <div className="text-xs sm:text-sm text-gray-600">
+              Coach Name: {selectedSchoolDetails.coachName || 'N/A'}
+            </div>
+            <div className="text-xs sm:text-sm text-gray-600">
+              Coach Phone: {selectedSchoolDetails.coachPhone || 'N/A'}
+            </div>
           </div>
         )}
 
