@@ -399,6 +399,40 @@ export default function Dashboard() {
             <div className="text-xs sm:text-sm text-gray-600">
               Coach Phone: {selectedSchoolDetails.coachPhone || 'N/A'}
             </div>
+            <div className="mt-3 flex items-center gap-2">
+              <input
+                id="replace-group-photo-input"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  try {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const form = new FormData();
+                    form.append('groupPhoto', file);
+                    await API.post(`/school/${selectedSchool}/replace-group-photo`, form, {
+                      headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                    // Refresh school details and table after replace
+                    await fetchSelectedSchoolDetails(selectedSchool);
+                    setPopup({ show: true, message: 'Group photo replaced. Regenerating descriptors...', type: 'info' });
+                  } catch (err) {
+                    setPopup({ show: true, message: 'Failed to replace group photo', type: 'error' });
+                  } finally {
+                    // reset input value to allow re-selecting the same file
+                    const input = document.getElementById('replace-group-photo-input');
+                    if (input) input.value = '';
+                  }
+                }}
+              />
+              <button
+                className="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-800 text-xs"
+                onClick={() => document.getElementById('replace-group-photo-input')?.click()}
+              >
+                Replace Group Photo
+              </button>
+            </div>
           </div>
         )}
 
