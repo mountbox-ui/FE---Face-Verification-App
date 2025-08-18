@@ -336,17 +336,17 @@ export default function Dashboard() {
               ))}
             </select>
             <button
-              className="relative w-full sm:w-auto bg-white text-black border border-blue-500 px-4 pr-10 py-2 rounded hover:bg-blue-50 inline-flex items-center justify-center"
+              className="w-full sm:w-auto min-w-[320px] bg-white text-black border border-blue-500 px-5 py-2 rounded-md hover:bg-blue-50 flex items-center justify-center gap-2 text-sm sm:text-base"
               onClick={handleRegenerateDescriptors}
             >
-              <span className="whitespace-nowrap">Regenerate Face Descriptors</span>
               <img
                 src="/Beta%20Icon.png"
                 alt="Beta"
                 title="Beta"
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
+                className="w-4 h-4"
                 onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/Beta Icon.png'; }}
               />
+              <span className="whitespace-nowrap">Regenerate Face Descriptors</span>
             </button>
           </div>
 
