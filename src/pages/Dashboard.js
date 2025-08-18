@@ -340,11 +340,11 @@ export default function Dashboard() {
               onClick={handleRegenerateDescriptors}
             >
               <img
-                src="/Beta icon.png"
+                src="/Beta%20Icon.png"
                 alt="Beta"
                 title="Beta"
                 className="w-5 h-5 sm:w-6 sm:h-6"
-                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/Beta%20icon.png'; }}
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/Beta Icon.png'; }}
               />
               Regenerate Face Descriptors
             </button>
