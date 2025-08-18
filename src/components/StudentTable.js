@@ -470,16 +470,19 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                 </td>
                 <td className="p-2 border">
                   <button
-                    className="bg-blue-500 text-white px-2 sm:px-3 py-1 rounded hover:bg-blue-600 disabled:opacity-50 text-xs sm:text-sm"
+                    className="bg-white text-black border border-blue-500 px-2 sm:px-3 py-1 rounded hover:bg-blue-50 disabled:opacity-50 text-xs sm:text-sm flex items-center gap-1 sm:gap-2"
                     onClick={() => handleVerify(student)}
                     disabled={!actionsEnabled || verifyingId === student._id || student.dayResult === "success" || student.dayResult === "manually_verified"}
                   >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 00-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
                     {verifyingId === student._id ? "Verifying..." : "Verify"}
                   </button>
                 </td>
                 <td className="p-2 border">
                   <button
-                    className="bg-purple-500 text-white px-2 sm:px-3 py-1 rounded hover:bg-purple-600 disabled:opacity-50 text-xs sm:text-sm"
+                    className="bg-blue-500 text-white px-2 sm:px-3 py-1 rounded hover:bg-blue-600 disabled:opacity-50 text-xs sm:text-sm"
                     onClick={() => handleManualVerify(student)}
                     disabled={!actionsEnabled || manualVerifyingId === student._id || student.dayResult === "manually_verified"}
                   >
