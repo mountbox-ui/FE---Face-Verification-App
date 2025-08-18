@@ -417,7 +417,18 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
               
               <th className="p-2 border text-xs sm:text-sm">Day 1 Photo</th>
               <th className="p-2 border text-xs sm:text-sm">Status</th>
-              <th className="p-2 border text-xs sm:text-sm">Action</th>
+              <th className="p-2 border text-xs sm:text-sm">
+                <span className="inline-flex items-center gap-1">
+                  Action
+                  <img
+                    src="/Colored%20Beta.svg"
+                    alt="Beta"
+                    title="Beta"
+                    className="w-3.5 h-3.5 align-middle"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/Colored Beta.svg'; }}
+                  />
+                </span>
+              </th>
               <th className="p-2 border text-xs sm:text-sm">Manual Verification</th>
               <th className="p-2 border text-xs sm:text-sm">Re-verify</th>
             </tr>
