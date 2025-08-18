@@ -481,7 +481,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                 </td>
                 <td className="p-2 border">
                   <button
-                    className="bg-white text-black border border-blue-500 px-2 sm:px-3 py-1 rounded hover:bg-blue-50 disabled:opacity-50 text-xs sm:text-sm"
+                    className="bg-white text-black border border-blue-500 px-3 py-1 rounded hover:bg-blue-50 disabled:opacity-50 text-xs sm:text-sm min-w-[72px]"
                     onClick={() => handleVerify(student)}
                     disabled={!actionsEnabled || verifyingId === student._id || student.dayResult === "success" || student.dayResult === "manually_verified"}
                   >
