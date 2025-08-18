@@ -10,6 +10,8 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
   const [showCamera, setShowCamera] = useState(false);
   const [currentStudent, setCurrentStudent] = useState(null);
   const [capturedImage, setCapturedImage] = useState(null);
+  const [cameraMode, setCameraMode] = useState('verify'); // 'verify' | 'addPhoto'
+  const [savingPhotoId, setSavingPhotoId] = useState(null);
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [groupPhoto, setGroupPhoto] = useState(null);
   const [loadingGroupPhoto, setLoadingGroupPhoto] = useState(false);
@@ -95,6 +97,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
     setCurrentStudent(student);
     setShowCamera(true);
     setCapturedImage(null);
+    setCameraMode('verify');
     
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -106,6 +109,32 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
         audio: false 
       });
       
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error('Camera error:', err);
+      onVerifyResult("failed", `Camera access denied: ${err.message}`);
+    }
+  };
+
+  const handleAddPhoto = async (student) => {
+    setCurrentStudent(student);
+    setShowCamera(true);
+    setCapturedImage(null);
+    setCameraMode('addPhoto');
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          inlineSize: 640,
+          blockSize: 480,
+          facingMode: 'user'
+        },
+        audio: false
+      });
+
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -245,6 +274,27 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
     setVerifyingId(null);
   };
 
+  const submitDay1Photo = async () => {
+    if (!capturedImage || !currentStudent) return;
+
+    setSavingPhotoId(currentStudent._id);
+    try {
+      await API.post(`/student/${currentStudent._id}/day/1/result`, {
+        result: 'pending',
+        confidence: null,
+        photo: capturedImage
+      });
+
+      onVerifyResult('success', `Saved Day 1 photo for ${currentStudent.name}. Status set to Pending.`);
+    } catch (err) {
+      console.error('Save Day 1 photo error:', err);
+      onVerifyResult('failed', `Failed to save Day 1 photo: ${err.message}`);
+    }
+
+    closeCamera();
+    setSavingPhotoId(null);
+  };
+
   const closeCamera = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
@@ -264,7 +314,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
           <div className="bg-white p-4 sm:p-6 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg sm:text-xl font-bold">
-                Verify {currentStudent?.name}
+                {cameraMode === 'addPhoto' ? `Add Day 1 Photo for ${currentStudent?.name}` : `Verify ${currentStudent?.name}`}
               </h3>
               <button
                 onClick={closeCamera}
@@ -292,10 +342,10 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                       onClick={capturePhoto}
                       className="w-full sm:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
                     >
-                      Capture Photo
+                      {cameraMode === 'addPhoto' ? 'Capture Photo' : 'Capture Photo'}
                     </button>
                     <p className="text-xs text-gray-600">
-                      Make sure your face is clearly visible and well-lit
+                      Make sure the face is clearly visible and well-lit
                     </p>
                   </div>
                 )}
@@ -317,17 +367,29 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                     >
                       Retake
                     </button>
-                    <button
-                      onClick={submitVerification}
-                      disabled={verifyingId === currentStudent?._id}
-                      className="w-full sm:w-auto bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50 text-sm"
-                    >
-                      {verifyingId === currentStudent?._id ? "Verifying..." : "Submit Verification"}
-                    </button>
+                    {cameraMode === 'addPhoto' ? (
+                      <button
+                        onClick={submitDay1Photo}
+                        disabled={savingPhotoId === currentStudent?._id}
+                        className="w-full sm:w-auto bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50 text-sm"
+                      >
+                        {savingPhotoId === currentStudent?._id ? 'Saving...' : 'Save Photo'}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={submitVerification}
+                        disabled={verifyingId === currentStudent?._id}
+                        className="w-full sm:w-auto bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50 text-sm"
+                      >
+                        {verifyingId === currentStudent?._id ? "Verifying..." : "Submit Verification"}
+                      </button>
+                    )}
                   </div>
-                  <p className="text-xs text-gray-600 mt-2">
-                    Face detected ✓ - Ready for verification
-                  </p>
+                  {cameraMode !== 'addPhoto' && (
+                    <p className="text-xs text-gray-600 mt-2">
+                      Face detected ✓ - Ready for verification
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -372,7 +434,12 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                   {student.day1Photo ? (
                     <img src={student.day1Photo} alt="Day 1" className="w-16 h-16 object-cover rounded border" />
                   ) : (
-                    <span className="text-gray-500">No photo</span>
+                    <button
+                      className="bg-indigo-500 text-white px-2 sm:px-3 py-1 rounded hover:bg-indigo-600 text-xs sm:text-sm"
+                      onClick={() => handleAddPhoto(student)}
+                    >
+                      Add Photo
+                    </button>
                   )}
                 </td>
                 <td className="p-2 border text-xs sm:text-sm">
