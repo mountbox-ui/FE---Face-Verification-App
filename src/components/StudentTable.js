@@ -432,7 +432,20 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                 
                 <td className="p-2 border text-xs sm:text-sm">
                   {student.day1Photo ? (
-                    <img src={student.day1Photo} alt="Day 1" className="w-16 h-16 object-cover rounded border" />
+                    <div className="relative inline-block group">
+                      <img
+                        src={student.day1Photo}
+                        alt="Day 1"
+                        className="w-16 h-16 object-cover rounded border shadow-sm transition-transform duration-200 ease-out group-hover:scale-110 group-hover:shadow-md cursor-zoom-in"
+                      />
+                      <div className="absolute z-50 hidden group-hover:block -top-1 -left-1">
+                        <img
+                          src={student.day1Photo}
+                          alt="Day 1 preview"
+                          className="w-40 h-40 object-cover rounded border shadow-xl pointer-events-none"
+                        />
+                      </div>
+                    </div>
                   ) : (
                     <button
                       className="bg-indigo-500 text-white px-2 sm:px-3 py-1 rounded hover:bg-indigo-600 text-xs sm:text-sm"
