@@ -438,11 +438,11 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                         alt="Day 1"
                         className="w-16 h-16 object-cover rounded border shadow-sm transition-transform duration-200 ease-out group-hover:scale-110 group-hover:shadow-md cursor-zoom-in"
                       />
-                      <div className="absolute z-50 hidden group-hover:block -top-1 -left-1">
+                      <div className="absolute z-50 hidden group-hover:block -top-2 -left-2">
                         <img
                           src={student.day1Photo}
                           alt="Day 1 preview"
-                          className="w-40 h-40 object-cover rounded border shadow-xl pointer-events-none"
+                          className="w-64 h-64 object-cover border shadow-2xl pointer-events-none"
                         />
                       </div>
                     </div>
