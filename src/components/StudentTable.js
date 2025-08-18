@@ -424,7 +424,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                     src="/Colored%20Beta.svg"
                     alt="Beta"
                     title="Beta"
-                    className="w-3.5 h-3.5 align-middle"
+                    className="w-5 h-5 align-middle ml-1"
                     onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/Colored Beta.svg'; }}
                   />
                 </span>
