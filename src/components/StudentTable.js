@@ -424,7 +424,7 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                     src="/Beta%20Icon.png"
                     alt="Beta"
                     title="Beta"
-                    className="w-5 h-5 sm:w-6 sm:h-6 inline-block"
+                    className="w-4 h-4 inline-block"
                     onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/Beta Icon.png'; }}
                   />
                 </span>

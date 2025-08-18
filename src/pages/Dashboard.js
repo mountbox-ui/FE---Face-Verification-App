@@ -343,7 +343,7 @@ export default function Dashboard() {
                 src="/Beta%20Icon.png"
                 alt="Beta"
                 title="Beta"
-                className="w-5 h-5 sm:w-6 sm:h-6"
+                className="w-4 h-4"
                 onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/Beta Icon.png'; }}
               />
               Regenerate Face Descriptors
