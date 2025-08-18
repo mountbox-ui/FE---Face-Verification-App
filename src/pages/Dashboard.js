@@ -339,7 +339,13 @@ export default function Dashboard() {
               className="w-full sm:w-auto bg-white text-black border border-blue-500 px-4 py-2 rounded hover:bg-blue-50 flex items-center gap-2"
               onClick={handleRegenerateDescriptors}
             >
-              <img src="/Beta%20icon.png" alt="Beta" className="w-4 h-4" />
+              <img
+                src="/Beta icon.png"
+                alt="Beta"
+                title="Beta"
+                className="w-5 h-5 sm:w-6 sm:h-6"
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/Beta%20icon.png'; }}
+              />
               Regenerate Face Descriptors
             </button>
           </div>

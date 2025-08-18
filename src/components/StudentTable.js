@@ -417,7 +417,18 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
               
               <th className="p-2 border text-xs sm:text-sm">Day 1 Photo</th>
               <th className="p-2 border text-xs sm:text-sm">Status</th>
-              <th className="p-2 border text-xs sm:text-sm">Action</th>
+              <th className="p-2 border text-xs sm:text-sm">
+                <span className="inline-flex items-center gap-1">
+                  Action
+                  <img
+                    src="/Beta icon.png"
+                    alt="Beta"
+                    title="Beta"
+                    className="w-5 h-5 sm:w-6 sm:h-6 inline-block"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/Beta%20icon.png'; }}
+                  />
+                </span>
+              </th>
               <th className="p-2 border text-xs sm:text-sm">Manual Verification</th>
               <th className="p-2 border text-xs sm:text-sm">Re-verify</th>
             </tr>
@@ -470,11 +481,10 @@ export default function StudentTable({ students, schoolId, onVerifyResult, selec
                 </td>
                 <td className="p-2 border">
                   <button
-                    className="bg-white text-black border border-blue-500 px-2 sm:px-3 py-1 rounded hover:bg-blue-50 disabled:opacity-50 text-xs sm:text-sm flex items-center gap-1 sm:gap-2"
+                    className="bg-white text-black border border-blue-500 px-2 sm:px-3 py-1 rounded hover:bg-blue-50 disabled:opacity-50 text-xs sm:text-sm"
                     onClick={() => handleVerify(student)}
                     disabled={!actionsEnabled || verifyingId === student._id || student.dayResult === "success" || student.dayResult === "manually_verified"}
                   >
-                    <img src="/Beta%20icon.png" alt="Beta" className="w-3 h-3 sm:w-4 sm:h-4" />
                     {verifyingId === student._id ? "Verifying..." : "Verify"}
                   </button>
                 </td>
