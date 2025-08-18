@@ -411,12 +411,13 @@ export default function Dashboard() {
                     if (!file) return;
                     const form = new FormData();
                     form.append('groupPhoto', file);
-                    await API.post(`/school/${selectedSchool}/replace-group-photo`, form, {
+                    const res = await API.post(`/school/${selectedSchool}/replace-group-photo`, form, {
                       headers: { 'Content-Type': 'multipart/form-data' }
                     });
-                    // Refresh school details and table after replace
-                    await fetchSelectedSchoolDetails(selectedSchool);
-                    setPopup({ show: true, message: 'Group photo replaced. Regenerating descriptors...', type: 'info' });
+                    // Instantly reflect the new photo and refresh table view
+                    setSelectedSchoolDetails(prev => prev ? { ...prev, groupPhoto: res.data?.groupPhoto || prev.groupPhoto } : prev);
+                    setRefreshKey(k => k + 1);
+                    setPopup({ show: true, message: 'Group photo replaced.', type: 'success' });
                   } catch (err) {
                     setPopup({ show: true, message: 'Failed to replace group photo', type: 'error' });
                   } finally {
